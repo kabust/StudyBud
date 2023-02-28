@@ -10,3 +10,5 @@ Such applications and functionality were implemented (so far):
 - Authentication (Login, Logout, Registration)
 
 - User profile
+
+- Activity feed
