@@ -5,9 +5,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import Room, Topic, Message
-from .forms import RoomForm
+from .forms import RoomForm, UserForm
 
 
 def loginPage(request):
@@ -101,6 +101,22 @@ def userProfile(request, pk):
     context = {'user': user, 'rooms': rooms, 'room_messages': room_messages,
                'topics': topics}
     return render(request, 'main/profile.html', context)
+
+
+@login_required(login_url='login')
+def editUser(request):
+    user = request.user
+    form = UserForm(instance=user)
+
+    if request.method == 'POST':
+        form = UserForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('user-profile', pk=user.id)
+        else:
+            messages.error(request, 'An error occurred during editing')
+
+    return render(request, 'main/edit-user.html', {'form': form})
 
 
 @login_required(login_url='login')
