@@ -66,7 +66,7 @@ def home(request):
         Q(description__icontains=q)
     )
 
-    topics = Topic.objects.all()
+    topics = Topic.objects.all()[:5]
     room_count = rooms.count()
     room_messages = Message.objects.filter(Q(room__topic__name__icontains=q)).order_by('-created')
 
@@ -187,3 +187,15 @@ def deleteMessage(request, pk):
         message.delete()
         return redirect('home')
     return render(request, 'main/delete.html', {'obj': message})
+
+
+def topicsPage(request):
+    q = request.GET.get('q') if request.GET.get('q') is not None else ''
+    topics = Topic.objects.filter(Q(name__icontains=q))
+    context = {'topics': topics}
+    return render(request, 'main/topics.html', context)
+
+
+def activitiesPage(request):
+    room_messages = Message.objects.all().order_by('-created')
+    return render(request, 'main/activity.html', {'room_messages': room_messages})
